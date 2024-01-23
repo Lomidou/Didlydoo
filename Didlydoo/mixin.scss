@@ -1,0 +1,7 @@
+$mobile : 600px;
+
+@mixin media-maxwidth($screensize) {
+    @media (max-width:$screensize) {
+        @content;
+    }
+}

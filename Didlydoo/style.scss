@@ -1,0 +1,118 @@
+@import url(mixin.scss);
+
+*, *::before, *::after {
+    box-sizing: border-box;
+  }
+  * {
+    margin: 0;
+  }
+  body {
+    display: flex;
+    justify-content: center;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    background-color: rgb(153, 191, 248, 0.8);
+  }
+  img, picture, video, canvas, svg {
+    display: block;
+    max-width: 100%;
+  }
+  input, button, textarea, select {
+    font: inherit;
+  }
+  p, h1, h2, h3, h4, h5, h6 {
+    overflow-wrap: break-word;
+  }
+  #root, #__next {
+    isolation: isolate;
+  }
+
+.container{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border: 3px solid rgba(87, 134, 204, 0.5);
+  box-shadow: 3px 3px 3px rgb(55, 55, 55, 0.5);
+  background-color: rgba(106, 159, 238, 0.5);
+  margin-top: 75px;
+  padding: 50px;
+  border-radius: 25px;
+  width: fit-content;
+  min-width: 60%;
+}
+
+header{
+  display: flex;
+  flex-direction: column;
+  height: fit-content;
+
+h1{
+  align-self: center;
+  width: 300px;
+  margin-bottom: 10px;
+  
+  img{
+    margin-left: auto;
+    margin-right: auto;
+    box-shadow: 2px 2px 2px rgb(55, 55, 55, 0.5);
+  }
+}
+
+button{
+  align-self: flex-end;
+  cursor: pointer;
+  background-color: rgba(81, 135, 218, 0.5);
+  border-radius: 5px;
+  width: 40px;
+  border: 0px;
+  color: white;
+  font-size: 1.5rem;
+  font-weight: 900;
+  box-shadow: 2px 2px 2px rgb(55, 55, 55, 0.5);
+}
+}
+
+.separator{
+  border: 1px solid white;
+  width: 100%;
+  height: 0;
+  margin-top: 30px;
+}
+
+.modal{
+  position: relative;
+  z-index: 1;
+  height: fit-content;
+  display: none;
+  flex-direction: column;
+  margin-top: 10px;
+  background-color: rgba(167, 200, 248);
+  border: 3px solid rgba(87, 134, 204, 0.5);
+  border-radius: 15px;
+  padding: 10px;
+  gap: 5px;
+
+  span{
+    align-self: flex-end;
+    text-align: center;
+    background-color: rgba(81, 135, 218, 0.5);
+    border-radius: 5px;
+    border: 0px;
+    color: white;
+    font-size: 1rem;
+    font-weight: 900;
+    box-shadow: 2px 2px 2px rgb(55, 55, 55, 0.5);
+    width: 20px;
+    margin-bottom: 10px;
+    cursor: pointer;
+  }
+
+  input{
+    width: 100%;
+  }
+
+  button{
+    align-self: center;
+    margin-top: 10px;
+  }
+}

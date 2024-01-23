@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Didlydoo</title>
+  <link href="./style.css" rel="stylesheet">
+  <script src="main.js" defer></script>
+  <script src="./addtask.js" defer></script>
+</head>
+
+<body>
+
+  <div class="container">
+    <header>
+      <h1><img src="./images/logo.png" tag="logo"></h1>
+      <button id="button">+</button>
+      <div class="modal" id="modal">
+        <span id="close-modal">&#10007</span>
+        <div class="title">
+          <input class="input-title" id="input-title" type="text" placeholder="Nom de la tâche" required>
+        </div>
+        <div class="description">
+          <input id="input-description" type="text" placeholder="Description" required>
+        </div>
+        <div class="date">
+          <input id="input-date" type="date" placeholder="Closing date" required>
+        </div>
+        <button id="modal-button">+</button>
+      </div>
+    </header>
+    <main>
+      <div class="separator"></div>
+      <div class="list-container" id="list-container">
+
+      </div>
+    </main>
+  </div>
+
+</body>
+
+</html>
