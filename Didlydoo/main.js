@@ -3,6 +3,9 @@
 let myButton = document.getElementById('button')
 let myModal = document.getElementById('modal')
 let myArray = [];
+let InputTitle = document.getElementById('input-title')
+let InputDescription = document.getElementById('input-description')
+let InputDate = document.getElementById('input-date')
 
 myButton.addEventListener("click", () =>{
     myModal.style.display = "flex"
@@ -19,15 +22,15 @@ myClosingButton.addEventListener("click", () =>{
 let addingTask = document.getElementById('modal-button')
 
 addingTask.addEventListener("click", () => {
-    let InputTitle = document.getElementById('input-title')
-    let InputDescription = document.getElementById('input-description')
-    let InputDate = document.getElementById('input-date')
-
     let myTitle = InputTitle.value
     let myDescription = InputDescription.value
     let myDate = InputDate.value
 
-    myArray.push(myTitle, myDescription, myDate)
+    myArray.push({
+        title: myTitle,
+        description: myDescription,
+        date: myDate
+    })
     console.log(myArray)
 
     myModal.style.display = "none"
@@ -36,17 +39,17 @@ addingTask.addEventListener("click", () => {
     InputTitle.value = ""
     InputDescription.value = ""
     InputDate.value = ""
-    
-    createTaskList()
+
+    createTaskList(myTitle)
 })
 
 console.log(myArray)
 
-function createTaskList(){
+function createTaskList(title, description){
     let myTaskList = document.getElementById('list-container')
     let myFirstTask = document.createElement('div')
 
     myFirstTask.classList = "task"
-    myFirstTask.innerHTML = InputTitle.value
+    myFirstTask.innerText = title, description
     myTaskList.appendChild(myFirstTask)
 }
