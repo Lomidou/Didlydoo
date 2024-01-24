@@ -278,4 +278,15 @@ header #all-events {
   border-radius: 15px;
   padding: 10px;
   gap: 5px;
+}
+
+.list-container {
+  display: none;
+  flex-direction: column;
+  margin-top: 10px;
+  background-color: rgb(167, 200, 248);
+  border: 3px solid rgba(87, 134, 204, 0.5);
+  border-radius: 15px;
+  padding: 10px;
+  gap: 5px;
 }/*# sourceMappingURL=style.css.map */
