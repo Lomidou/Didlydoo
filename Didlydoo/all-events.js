@@ -1,3 +1,5 @@
+//const { get } = require("shortid/lib/alphabet")
+
 let allEventsButton = document.getElementById('all-events')
 
 fetch("http://localhost:3000/api/events")
@@ -14,8 +16,6 @@ fetch("http://localhost:3000/api/events")
                 myTitleEvent.innerText = event.name
                 myDescriptionEvent.innerText = event.description
                 let myID = event.id
-
-                console.log(myID)
 
                 myTitleEvent.appendChild(myDescriptionEvent)
                 myEventList.appendChild(myTitleEvent)
@@ -35,6 +35,8 @@ fetch("http://localhost:3000/api/events")
 
                 getNames(myTable, myID)
 
+                getAvailable()
+
                 myEventList.appendChild(myTable)
             })
         })
@@ -49,23 +51,41 @@ function getNames(myTable, myID) {
         .then(response => response.json())
         .then(datas => {
             datas.forEach(data => {
-            const myName = data.name
-            const id = data.events.map(id => id.id)
+                const myName = data.name
+                const id = data.events.map(id => id.id)
 
-            console.log(datas)
-            
-            if(id.includes(myID)){
-                let myBody = document.createElement("tbody")
-                let myRow = document.createElement("tr")
-                let myData = document.createElement("td")
+                if (id.includes(myID)) {
+                    let myBody = document.createElement("tbody")
+                    let myRow = document.createElement("tr")
+                    let myData = document.createElement("td")
 
-                myData.innerText = myName
+                    myData.innerText = myName
 
-                myRow.appendChild(myData)
-                myBody.appendChild(myRow)
-                myTable.appendChild(myBody)
-            }
+                    myRow.appendChild(myData)
+                    myBody.appendChild(myRow)
+                    myTable.appendChild(myBody)
+                }
             })
+        })
+        .catch(error => {
+            console.error('Erreur:', error)
+        })
+}
+
+function getAvailable() {
+    fetch("http://localhost:3000/api/events")
+        .then(response => response.json())
+        .then(data => {
+            data.forEach(data => {
+                const date = data.dates.map(date => date.attendees)
+
+                date.forEach(event => {
+                    const availableList = event.map(events => events.available)
+
+                    console.log(availableList)
+                })
+            }
+            )
         })
         .catch(error => {
             console.error('Erreur:', error)
