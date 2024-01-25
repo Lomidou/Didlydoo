@@ -1,35 +1,73 @@
-fetch ("http://localhost:3000/api/events")
-.then(response => response.json())
-.then(data => {
-    let allEventsButton = document.getElementById('all-events')
-    let myEventList = document.getElementById('list-container')
+let allEventsButton = document.getElementById('all-events')
 
-    allEventsButton.addEventListener("click", () => {
-        data.forEach(event => {
-            let myTitleEvent = document.createElement("div")
-            let myDescriptionEvent = document.createElement("div")
+fetch("http://localhost:3000/api/events")
+    .then(response => response.json())
+    .then(data => {
+        let myEventList = document.getElementById('list-container')
 
-            myTitleEvent.innerText = event.name
-            myDescriptionEvent.innerText = event.description
+        allEventsButton.addEventListener("click", () => {
 
-            myTitleEvent.appendChild(myDescriptionEvent)
-            myEventList.appendChild(myTitleEvent)
+            data.forEach(event => {
+                let myTitleEvent = document.createElement("div")
+                let myDescriptionEvent = document.createElement("div")
 
-            myEventList.style.display = 'block'
+                myTitleEvent.innerText = event.name
+                myDescriptionEvent.innerText = event.description
+                let myID = event.id
+
+                console.log(myID)
+
+                myTitleEvent.appendChild(myDescriptionEvent)
+                myEventList.appendChild(myTitleEvent)
+
+                myEventList.style.display = 'block'
+
+                let myTable = document.createElement("table")
+                let myDates = event.dates.map(datum => datum.date).join("</th> <th>")
+
+                myTable.innerHTML =
+                    `<thead>
+            <tr>
+                <th>Participant(s)</th>
+                <th colspan="${event.dates.length}">${myDates}</th>
+            </tr>
+            </thead>`
+
+                getNames(myTable, myID)
+
+                myEventList.appendChild(myTable)
+            })
         })
-
-        data.forEach(date =>{
-            let myTable = document.createElement("table")
-            let myTableRow = document.createElement("tr")
-            let myTableData = document.createElement("td")
-
-            for (let i = 0; i < data.dates.length; i++){
-                
-            }
-        })
-        console.table(data)
     })
-})
-.catch(error => {
-    console.error('Erreur:', error)
-  })
+
+    .catch(error => {
+        console.error('Erreur:', error)
+    })
+
+function getNames(myTable, myID) {
+    fetch("http://localhost:3000/api/attendees")
+        .then(response => response.json())
+        .then(datas => {
+            datas.forEach(data => {
+            const myName = data.name
+            const id = data.events.map(id => id.id)
+
+            console.log(datas)
+            
+            if(id.includes(myID)){
+                let myBody = document.createElement("tbody")
+                let myRow = document.createElement("tr")
+                let myData = document.createElement("td")
+
+                myData.innerText = myName
+
+                myRow.appendChild(myData)
+                myBody.appendChild(myRow)
+                myTable.appendChild(myBody)
+            }
+            })
+        })
+        .catch(error => {
+            console.error('Erreur:', error)
+        })
+}

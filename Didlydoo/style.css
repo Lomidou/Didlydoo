@@ -226,6 +226,11 @@ header #all-events {
   width: -moz-fit-content;
   width: fit-content;
 }
+header #all-events {
+  margin-top: 10px;
+  width: -moz-fit-content;
+  width: fit-content;
+}
 
 .separator {
   border: 1px solid white;
