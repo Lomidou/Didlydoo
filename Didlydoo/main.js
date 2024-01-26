@@ -55,7 +55,6 @@ addingTask.addEventListener("click", () => {
             user: myUser,
             date: dates,
         });
-        console.table(myArray);
 
         myModal.style.display = "none";
         myButton.style.display = "block";
@@ -97,7 +96,7 @@ function createEvent(title, description, user, dates) {
             let myContainer = document.createElement("div");
 
             let myEditButton = document.createElement("button");
-            myEditButton.innerText = "Modifier";
+            myEditButton.innerText = "Edit";
 
             let myDeleteButton = document.createElement("button");
             myDeleteButton.id = "supprimer";
@@ -150,7 +149,7 @@ function createEvent(title, description, user, dates) {
             }
 
             deleteEvent(myContainer, eventID);
-            attendeesEvent(myContainer, eventID, myEditButton);
+            attendeesEvent(myContainer, eventID, myEditButton, title, eventDates);
         })
         .catch(error => {
             console.error("Erreur de la requête Fetch :", error);
@@ -158,13 +157,15 @@ function createEvent(title, description, user, dates) {
 }
 
 function deleteEvent(container, eventID) {
-    deleteButton.addEventListener("click", () => {
-        fetch(`http://localhost:3000/api/events/${eventID}`, {
-            method: "DELETE",
-            headers: {
-                "Content-Type": "application/json",
-            },
-        })
+    let deleteButton = container.querySelector("#supprimer");
+    if (deleteButton) {
+        deleteButton.addEventListener("click", () => {
+            fetch(`http://localhost:3000/api/events/${eventID}`, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            })
             .then(response => {
                 if (response.ok) {
                     container.remove();
@@ -175,37 +176,64 @@ function deleteEvent(container, eventID) {
             .catch(deleteError => {
                 console.error("Erreur de la requête Fetch lors de la suppression :", deleteError);
             });
-    });
-}
-
-function attendeesEvent(container, eventID, editButton) {
-    editButton.addEventListener("click", () => {
-        let isAvailable = available.checked;
-        let isNotAvailable = notAvailable.checked;
-
-        let myBody = {
-            name: title,
-            dates: [{
-                date: date,
-                available: isAvailable,
-                notAvailable: isNotAvailable,
-            }]
-        };
-
-        fetch(`http://localhost:3000/api/events/${eventID}/attend`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(myBody),
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log(data);
-            // Faire le traitement nécessaire ici en fonction de la réponse du serveur
-        })
-        .catch(modifyError => {
-            console.error("Erreur de la requête Fetch lors de la modification :", modifyError);
         });
-    });
+    } else {
+        console.error("Delete button not found within the container.");
+    }
 }
+
+function updateTableWithAttendees(container, eventID, eventDates) {
+    let myTable = container.querySelector("table");
+    let myTbody = myTable.querySelector("tbody");
+
+    myTbody.innerHTML = ""; // Clear existing rows
+
+    let headerRow = document.createElement("tr");
+    headerRow.innerHTML = "<th>Participant(s)</th>";
+
+    for (let date of eventDates) {
+        let dateCell = document.createElement("th");
+        dateCell.innerText = date;
+        headerRow.appendChild(dateCell);
+    }
+
+    myTbody.appendChild(headerRow);
+
+    fetch(`http://localhost:3000/api/events/${eventID}/attendees`)
+        .then(response => response.json())
+        .then(datas => {
+            console.log("Received data:", datas);
+
+            datas.forEach(participant => {
+                let userRow = document.createElement("tr");
+                let userCell = document.createElement("td");
+                userCell.innerText = participant.name;
+                userRow.appendChild(userCell);
+
+                eventDates.forEach(date => {
+                    let dateCell = document.createElement("td");
+                    let event = participant.events.find(ev => ev.id === eventID);
+
+                    if (event && event.dates) {
+                        let matchingDate = event.dates.find(d => d.date === date);
+                        if (matchingDate) {
+                            if (matchingDate.available) {
+                                dateCell.innerText = "V";
+                            } else if (matchingDate.notAvailable) {
+                                dateCell.innerText = "X";
+                            }
+                        }
+                    }
+
+                    userRow.appendChild(dateCell);
+                });
+
+                myTbody.appendChild(userRow);
+            });
+        })
+        .catch(error => {
+            console.error('Erreur:', error);
+        });
+}
+
+
