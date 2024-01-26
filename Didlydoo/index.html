@@ -8,8 +8,8 @@
   <link href="./style.css" rel="stylesheet">
   <script src="main.js" defer></script>
   <script src="./all-events.js" defer></script>
-  <script src="darkmode.js"></script>
-  <script src="post-event.js"></script>
+  <script src="darkmode.js" defer></script>
+  <script src="post-event.js" defer></script>
 </head>
 
 <body>
@@ -21,11 +21,11 @@
       </div>
       <h1><img src="./images/logo.png" tag="logo"></h1>
       <button id="button">+</button>
-      <button id="all-events">Afficher tous les évènements</button>
+      <button id="all-events">Display all events</button>
       <div class="modal" id="modal">
         <span id="close-modal">&#10007</span>
         <div class="title">
-          <input class="input-title" id="input-title" type="text" placeholder="Nom de l'évènement" required>
+          <input class="input-title" id="input-title" type="text" placeholder="Name of the event" required>
         </div>
         <div class="description">
           <input id="input-description" type="text" placeholder="Description" required>
@@ -35,8 +35,18 @@
         </div>
         <div class="date">
           <input id="input-date" type="date" placeholder="Closing date" required>
-          <div class="date-button" id="date-button">+</div>
+          <button class="date-button" id="date-button">Add another date</button>
         </div>
+        <form id="availabilityForm">
+          <label>
+              <input type="checkbox" name="available" value="available" id="available">
+              Available
+          </label>
+          <label>
+              <input type="checkbox" name="notAvailable" value="notAvailable" id="notAvailable">
+              Not Available
+          </label>
+      </form>
         <button id="modal-button">+</button>
       </div>
     </header>

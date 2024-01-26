@@ -294,4 +294,27 @@ header #all-events {
   border-radius: 15px;
   padding: 10px;
   gap: 5px;
+}
+
+table,
+th,
+td {
+  border: 2px solid black;
+  padding: 5px;
+}
+
+.date-button {
+  width: -moz-fit-content;
+  width: fit-content;
+  font-size: 12px;
+}
+
+.newDate {
+  margin-top: 5px;
+}
+
+form {
+  display: flex;
+  width: 100%;
+  justify-content: center;
 }/*# sourceMappingURL=style.css.map */

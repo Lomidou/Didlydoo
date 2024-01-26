@@ -1,6 +1,4 @@
-
-
-document.addEventListener("DOMContentLoaded", function () {
+/*document.addEventListener("DOMContentLoaded", function () {
     const addButton = document.getElementById("modal-button");
   
     addButton.addEventListener("click", addEvent);
@@ -15,8 +13,7 @@ document.addEventListener("DOMContentLoaded", function () {
       let eventValue = eventInput.value;
       let descriptionValue = descriptionInput.value;
       let dateValue = dateInput.value;
-  
-      // Vérifiez si toutes les valeurs nécessaires sont présentes
+
       if (!nameValue || !eventValue || !descriptionValue || !dateValue) {
         console.log("Veuillez remplir tous les champs.");
         return;
@@ -29,7 +26,7 @@ document.addEventListener("DOMContentLoaded", function () {
   
       let eventData = {
         name: eventValue,
-        dates: [dateValue], // Assuming you want an array of dates
+        dates: [dateValue], 
         author: nameValue,
         description: descriptionValue,
       };
@@ -58,6 +55,5 @@ document.addEventListener("DOMContentLoaded", function () {
           console.log(`Erreur lors de l'ajout de l'événement: ${err.message}`);
         });
     }
-  });
-  
+  });*/
 

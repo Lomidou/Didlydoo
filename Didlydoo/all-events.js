@@ -1,93 +1,119 @@
-//const { get } = require("shortid/lib/alphabet")
-
-let allEventsButton = document.getElementById('all-events')
+let allEventsButton = document.getElementById('all-events');
 
 fetch("http://localhost:3000/api/events")
     .then(response => response.json())
     .then(data => {
-        let myEventList = document.getElementById('list-container')
+        let myEventList = document.getElementById('list-container');
 
         allEventsButton.addEventListener("click", () => {
-
             data.forEach(event => {
-                let myTitleEvent = document.createElement("div")
-                let myDescriptionEvent = document.createElement("div")
+                let myTitleEvent = document.createElement("div");
+                let myDescriptionEvent = document.createElement("div");
 
-                myTitleEvent.innerText = event.name
-                myDescriptionEvent.innerText = event.description
-                let myID = event.id
+                myTitleEvent.innerText = event.name;
+                myDescriptionEvent.innerText = event.description;
+                let myID = event.id;
+                
+                let myEditButton = document.createElement("button");
+                myEditButton.innerText = "Edit";
+                let myDeleteButton = document.createElement("button");
+                myDeleteButton.innerHTML = "&#10007"; 
+                let myContainer = document.createElement("div");
+                let myButtons = document.createElement("div");
+                myButtons.appendChild(myEditButton);
+                myButtons.appendChild(myDeleteButton);
+                myContainer.appendChild(myButtons);
 
-                myTitleEvent.appendChild(myDescriptionEvent)
-                myEventList.appendChild(myTitleEvent)
+                myEventList.appendChild(myButtons)
+                myEventList.appendChild(myTitleEvent);
+                myEventList.appendChild(myDescriptionEvent);
 
-                myEventList.style.display = 'block'
+                let myTable = createTable(myID, event.dates);
+                myEventList.appendChild(myTable);
 
-                let myTable = document.createElement("table")
-                let myDates = event.dates.map(datum => datum.date).join("</th> <th>")
+                myEventList.style.display = 'block';
 
-                myTable.innerHTML =
-                    `<thead>
-            <tr>
-                <th>Participant(s)</th>
-                <th colspan="${event.dates.length}">${myDates}</th>
-            </tr>
-            </thead>`
-
-                getNames(myTable, myID)
-
-                getAvailable()
-
-                myEventList.appendChild(myTable)
-            })
-        })
+                deleteEvent(myDeleteButton, myContainer, myID)
+            });
+        });
     })
-
     .catch(error => {
-        console.error('Erreur:', error)
+        console.error('Erreur:', error);
+    });
+
+function createTable(myID, eventDates) {
+    let myTable = document.createElement("table");
+    let myThead = document.createElement("thead");
+    let myTbody = document.createElement("tbody");
+
+    let myHeaderRow = document.createElement("tr");
+    let myNameHeader = document.createElement("th");
+    myNameHeader.innerText = "Participant(s)";
+    myHeaderRow.appendChild(myNameHeader);
+
+    eventDates.forEach(date => {
+        let myDateHeader = document.createElement("th")
+        myDateHeader.innerText = date.date
+        myHeaderRow.appendChild(myDateHeader)
     })
 
-function getNames(myTable, myID) {
+    myThead.appendChild(myHeaderRow);
+
     fetch("http://localhost:3000/api/attendees")
         .then(response => response.json())
         .then(datas => {
-            datas.forEach(data => {
-                const myName = data.name
-                const id = data.events.map(id => id.id)
+            let participants = datas.filter(data => data.events.some(ev => ev.id === myID));
 
-                if (id.includes(myID)) {
-                    let myBody = document.createElement("tbody")
-                    let myRow = document.createElement("tr")
-                    let myData = document.createElement("td")
+            participants.forEach(participant => {
+                let myRow = document.createElement("tr");
+                let myNameCell = document.createElement("td");
+                myNameCell.innerText = participant.name;
+                myRow.appendChild(myNameCell);
 
-                    myData.innerText = myName
+                eventDates.forEach(date => {
+                    let myCell = document.createElement("td");
+                    let event = participant.events.find(ev => ev.id === myID);
 
-                    myRow.appendChild(myData)
-                    myBody.appendChild(myRow)
-                    myTable.appendChild(myBody)
-                }
-            })
+                    if (event && event.dates.some(d => d.date === date.date && d.available)) {
+                        myCell.innerText = "✅";
+                    } else {
+                        myCell.innerText = "❌";
+                    }
+
+                    myRow.appendChild(myCell);
+                });
+
+                myTbody.appendChild(myRow);
+            });
+
+            myTable.appendChild(myThead);
+            myTable.appendChild(myTbody);
         })
         .catch(error => {
-            console.error('Erreur:', error)
-        })
+            console.error('Erreur:', error);
+        });
+
+    return myTable;
 }
 
-function getAvailable() {
-    fetch("http://localhost:3000/api/events")
-        .then(response => response.json())
-        .then(data => {
-            data.forEach(data => {
-                const date = data.dates.map(date => date.attendees)
-
-                date.forEach(event => {
-                    const availableList = event.map(events => events.available)
-
-                    console.log(availableList)
-                })
-            }
-            )
+function deleteEvent(myDeleteButton, myContainer, eventID) {
+    myDeleteButton.addEventListener("click", () => {
+        fetch(`http://localhost:3000/api/events/${eventID}`, {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+            },
         })
-        .catch(error => {
-            console.error('Erreur:', error)
-        })
+            .then(response => {
+                if (response.ok) {
+                    myContainer.remove();
+                    myContainer.style.display = 'none'
+                } else {
+                    console.error("Error deleting event:", response.statusText);
+                }
+            })
+            .catch(deleteError => {
+                console.error("Fetch delete error:", deleteError);
+            });
+    });
 }

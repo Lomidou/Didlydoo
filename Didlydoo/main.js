@@ -1,72 +1,211 @@
-//const { add } = require("date-fns")
-
-let myButton = document.getElementById('button')
-let myModal = document.getElementById('modal')
+const myButton = document.getElementById('button');
+let myModal = document.getElementById('modal');
 let myArray = [];
-let InputTitle = document.getElementById('input-title')
-let InputDescription = document.getElementById('input-description')
-let InputDate = document.getElementById('input-date')
-let InputUser = document.getElementById('input-user') 
-let myTaskList = document.getElementById('list-container')
+let InputTitle = document.getElementById('input-title');
+let InputDescription = document.getElementById('input-description');
+let InputDate = document.getElementById('input-date');
+let InputUser = document.getElementById('input-user');
+let myTaskList = document.getElementById('list-container');
+let addDate = document.getElementById('date-button');
+let available = document.getElementById('available');
+let notAvailable = document.getElementById('notAvailable');
+let newInput;
 
-myButton.addEventListener("click", () =>{
-    myModal.style.display = "flex"
-    myButton.style.display = "none"
-})
+myButton.addEventListener("click", () => {
+    myModal.style.display = "flex";
+    myButton.style.display = "none";
+});
 
-let myClosingButton = document.getElementById('close-modal')
+addDate.addEventListener("click", () => {
+    newInput = document.createElement('input');
+    newInput.type = 'date';
+    newInput.placeholder = 'Closing date';
+    newInput.classList = 'newDate';
 
-myClosingButton.addEventListener("click", () =>{
-    myModal.style.display = "none"
-    myButton.style.display = "block"
-})
+    InputDate.parentNode.insertBefore(newInput, InputDate.nextSibling);
+});
 
-let addingTask = document.getElementById('modal-button')
+let myClosingButton = document.getElementById('close-modal');
+
+myClosingButton.addEventListener("click", () => {
+    myModal.style.display = "none";
+    myButton.style.display = "block";
+});
+
+let addingTask = document.getElementById('modal-button');
 
 addingTask.addEventListener("click", () => {
-    let myTitle = InputTitle.value
-    let myDescription = InputDescription.value
-    let myUser = InputUser.value
-    let myDate = InputDate.value
+    if (InputTitle.value === '' || InputDescription.value === '' || InputUser.value === '' || InputDate.value === ''){
+        alert('Vous devez remplir tous les champs !');
+    } else {
+        let myTitle = InputTitle.value;
+        let myDescription = InputDescription.value;
+        let myUser = InputUser.value;
+        let myDate = InputDate.value;
+        let myNewDate = newInput ? newInput.value : '';
 
-    myArray.push({
-        title: myTitle,
-        description: myDescription,
-        user: myUser,
-        date: myDate
+        let dates = [myDate];
+        if (myNewDate) {
+            dates.push(myNewDate);
+        }
+
+        myArray.push({
+            title: myTitle,
+            description: myDescription,
+            user: myUser,
+            date: dates,
+        });
+        console.table(myArray);
+
+        myModal.style.display = "none";
+        myButton.style.display = "block";
+        myTaskList.style.display = 'block';
+
+        InputTitle.value = "";
+        InputDescription.value = "";
+        InputDate.value = "";
+        InputUser.value = "";
+        if (newInput) {
+            newInput.value = "";
+        }
+
+        createEvent(myTitle, myDescription, myUser, dates);
+    }
+});
+
+console.log(myArray);
+
+function createEvent(title, description, user, dates) {
+    let myBody = {
+        name: title,
+        dates: dates,
+        author: user,
+        description: description,
+    };
+
+    fetch("http://localhost:3000/api/events/", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(myBody),
     })
-    console.table(myArray)
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
 
-    myModal.style.display = "none"
-    myButton.style.display = "block"
-    myTaskList.style.display = 'block'
+            let myContainer = document.createElement("div");
 
-    InputTitle.value = ""
-    InputDescription.value = ""
-    InputDate.value = ""
-    InputUser.value = ""
+            let myEditButton = document.createElement("button");
+            myEditButton.innerText = "Modifier";
 
-    createTaskList(myTitle, myDescription, myUser)
-})
+            let myDeleteButton = document.createElement("button");
+            myDeleteButton.id = "supprimer";
+            myDeleteButton.innerHTML = "&#10007";
 
-console.log(myArray)
+            let myButtons = document.createElement("div");
+            myButtons.appendChild(myEditButton);
+            myButtons.appendChild(myDeleteButton);
+            myContainer.appendChild(myButtons);
 
-function createTaskList(title, description, user){
-    let myFirstTask = document.createElement('div')
+            let myTitleElement = document.createElement('div');
+            myTitleElement.innerText = title;
 
-    myFirstTask.classList = "task"
-    myFirstTask.innerText = title
-    myTaskList.appendChild(myFirstTask)
+            let myDescriptionElement = document.createElement('div');
+            myDescriptionElement.innerText = description;
 
-    let myTaskDescription = document.createElement('div')
+            myContainer.appendChild(myTitleElement);
+            myContainer.appendChild(myDescriptionElement);
 
-    myTaskDescription.classList = "description"
-    myTaskDescription.innerText = description
-    myFirstTask.appendChild(myTaskDescription)
+            let myTable = document.createElement("table");
+            let myThead = document.createElement("thead");
+            let myTbody = document.createElement("tbody");
 
-    let myTaskUser = document.createElement('div')
+            let myHeaderRow = document.createElement("tr");
+            let myNameHeader = document.createElement("th");
+            myNameHeader.innerText = "Participant(s)";
+            myHeaderRow.appendChild(myNameHeader);
 
-    myTaskUser.classList = "user"
-    myTaskUser.innerText = user
-    myFirstTask.appendChild(myTaskUser)
+            myThead.appendChild(myHeaderRow);
+            myTable.appendChild(myThead);
+            myTable.appendChild(myTbody);
+
+            myContainer.appendChild(myTable);
+
+            myTaskList.appendChild(myContainer);
+
+            let userRow = document.createElement("tr");
+            let userCell = document.createElement("td");
+            userCell.innerText = user;
+            userRow.appendChild(userCell);
+            myTbody.appendChild(userRow);
+
+            let eventID = data.id;
+            let eventDates = data.dates || [];
+
+            for (let date of eventDates) {
+                let dateCell = document.createElement("th");
+                dateCell.innerText = date;
+                myHeaderRow.appendChild(dateCell);
+            }
+
+            deleteEvent(myContainer, eventID);
+            attendeesEvent(myContainer, eventID, myEditButton);
+        })
+        .catch(error => {
+            console.error("Erreur de la requête Fetch :", error);
+        });
+}
+
+function deleteEvent(container, eventID) {
+    deleteButton.addEventListener("click", () => {
+        fetch(`http://localhost:3000/api/events/${eventID}`, {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        })
+            .then(response => {
+                if (response.ok) {
+                    container.remove();
+                } else {
+                    console.error("Erreur lors de la suppression de l'événement :", response.statusText);
+                }
+            })
+            .catch(deleteError => {
+                console.error("Erreur de la requête Fetch lors de la suppression :", deleteError);
+            });
+    });
+}
+
+function attendeesEvent(container, eventID, editButton) {
+    editButton.addEventListener("click", () => {
+        let isAvailable = available.checked;
+        let isNotAvailable = notAvailable.checked;
+
+        let myBody = {
+            name: title,
+            dates: [{
+                date: date,
+                available: isAvailable,
+                notAvailable: isNotAvailable,
+            }]
+        };
+
+        fetch(`http://localhost:3000/api/events/${eventID}/attend`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(myBody),
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+            // Faire le traitement nécessaire ici en fonction de la réponse du serveur
+        })
+        .catch(modifyError => {
+            console.error("Erreur de la requête Fetch lors de la modification :", modifyError);
+        });
+    });
 }
